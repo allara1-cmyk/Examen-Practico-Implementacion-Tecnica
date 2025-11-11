@@ -1,0 +1,90 @@
+// Parte 2: Base de Datos NoSQL (MongoDB)
+// Seleccionar base
+use("gastro_app");
+
+// Crear coleccion con validacion de esquema
+db.createCollection("platos", {
+  validator: {
+    $jsonSchema: {
+      bsonType: "object",
+      required: ["nombre_plato", "precio", "id_categoria"],
+      additionalProperties: false,
+      // Agregar campo Id para que permita insercion, 
+      // caso contrario no permite por que no admite propiedades adicionales
+      properties: {
+        _id: { 
+            bsonType: "objectId"
+        },
+        nombre_plato: { 
+            bsonType: "string", 
+        },
+        precio: { 
+            bsonType: "double", 
+            minimum: 0 
+        },
+        id_categoria: { 
+            bsonType: "int"
+        },
+        // Opcionales permitidos
+        es_alcoholica: { 
+            bsonType: "bool"
+        },
+        tamano_ml: { 
+            bsonType: "int"
+        },
+        alergenos: {
+          bsonType: "array",
+          items: { 
+            bsonType: "string" 
+          }
+        }
+      }
+    }
+  } 
+});
+
+// Documentos de ejemplo
+db.platos.insertMany([
+  {
+    nombre_plato: "Cerveza Artesanal",
+    precio: 4.50,                // double
+    id_categoria: 3,  
+    es_alcoholica: true,
+    tamano_ml: 500
+  },
+  { 
+    nombre_plato: "Lomo Saltado con Arroz",
+    precio: 4.50,
+    id_categoria: 2, 
+    alergenos: ['gluten', 'lactosa']
+  },
+  {
+    nombre_plato: "Jugo Natural",
+    precio: 3.50,
+    id_categoria: 3,  // int 
+    es_alcoholica: false,
+    tamano_ml: 350
+  }
+]);
+
+// Actualizar precio de la bebida 1
+db.platos.updateOne(
+    { 
+        nombre_plato: "Cerveza Artesanal" 
+    },
+    { 
+        $inc: { 
+            precio: 0.50 
+        } 
+    }
+);
+
+// Consulta de bebidas baratas (<5.00)
+db.platos.find({
+    es_alcoholica: { 
+        $exists: true 
+    },
+    precio: { 
+        $lt: 5.00 
+    }
+});
