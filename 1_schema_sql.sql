@@ -1,7 +1,7 @@
 -- Parte 1: Base de Datos Relacional (SQL) 
 -- Crear la base de datos
 CREATE DATABASE gastro_app;
-USE gastroapp;
+USE gastro_app;
 
 -- Crear la tabla Categorias
 CREATE TABLE Categorias (
